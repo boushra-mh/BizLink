@@ -1,9 +1,10 @@
-<?php 
+<?php
 namespace App\Enums;
 enum RoleEnum:string
 {
     case ADMIN='admin';
     case CUSTOMER='customer';
+    case PROVIDER='provider';
 
 
     public function guard()
@@ -12,8 +13,9 @@ enum RoleEnum:string
     {
         self::ADMIN=>'admin',
         self::CUSTOMER =>'customer',
+        self::PROVIDER =>'provider',
     };
-    
+
 }
 }
 
