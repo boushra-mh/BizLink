@@ -40,6 +40,14 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+         'admin' => [
+            'driver' => 'session',
+            'provider' => 'admins',
+        ],
+         'customer' => [
+            'driver' => 'sanctum',
+            'provider' => 'customers',
+        ],
     ],
 
     /*
@@ -62,7 +70,15 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => App\Models\User::class,
+        ],
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' =>App\Models\Admin::class,
+        ],
+        'customers' => [
+            'driver' => 'eloquent',
+            'model' =>App\Models\Customer::class,
         ],
 
         // 'users' => [
