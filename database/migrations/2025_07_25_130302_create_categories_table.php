@@ -14,8 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('status')->default('active');
-            $table->string('slug')->unique();
-            $table->string('icon')->nullable();
+            $table->text('description');
             $table->softDeletes();
 
             $table->timestamps();
