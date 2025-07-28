@@ -4,8 +4,9 @@ namespace App\Enums;
 
 enum ProviderStatusEnum:string
 {
-    case APPROVED ='approved';
-    case CANCELED='canceled';
-    case PENDING ='pending';
+       case ACTIVE = 'active';
+    case INACTIVE = 'inactive';
+    case EXPIRED = 'expired';
+
 
 }

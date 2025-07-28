@@ -65,8 +65,12 @@ class CategoryService
         return Category::findOrFail($id);
     }
 
-    public function getAll()
+    public function getAll(Request $request)
     {
+        $query = Category::query();
+
+        $query->filterByName($request->input('name'))
+              ->filterByStatus($request->input('status'));
         return Category::latest()->get();
     }
 

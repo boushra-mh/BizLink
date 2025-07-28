@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Web\Admin\ServiceProviders;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreProviderRequest extends FormRequest
 {
@@ -35,11 +36,30 @@ class StoreProviderRequest extends FormRequest
      public function messages(): array
     {
         return [
-            'name.required' => __('messages.name_required'),
-            'phone.required' => __('messages.phone_required'),
-            'location.required' => __('messages.location_required'),
-            'sub_category_id.required' => __('messages.sub_category_required'),
-            'sub_category_id.exists' => __('messages.sub_category_not_found'),
+            'name' => 'required|string|max:255',
+            'shop_name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'status' => ['required', Rule::in(['active', 'inactive', 'expired'])], // حسب enum
+
+            'phone' => 'required|string|max:10',
+            'whatsapp' => 'nullable|string|max:10',
+            'facebook' => 'nullable|url',
+            'instagram' => 'nullable|url',
+            'location' => 'nullable|string|max:255',
+
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
+            'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
+            'sub_category_ids' => 'required|array|min:1',
+            'sub_category_ids.*' => 'exists:sub_categories,id',
+
+            'city_ids' => 'required|array|min:1',
+            'city_ids.*' => 'exists:cities,id',
+
+            'tag_ids' => 'required|array|min:1',
+            'tag_ids.*' => 'exists:tags,id',
         ];
     }
 }

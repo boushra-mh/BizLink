@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Enums\StatusEnum;
+use App\Traits\HasFilters;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 
 class State extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes ,HasFilters;
 protected $fillable=['name','status'];
 protected $casts=['status'=>StatusEnum::class];
 public function cities()

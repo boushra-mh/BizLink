@@ -15,8 +15,13 @@ class SubCategoryService
         return SubCategory::findOrFail($id);
     }
 
-    public function getAll()
+    public function getAll(Request $request)
     {
+          $query = SubCategory::query();
+
+        $query->filterByName($request->input('name'))
+              ->filterByStatus($request->input('status'))
+              ->filterByRelation('category', 'id', $request->input('category_id'));
         return SubCategory::latest()->get();
     }
 
