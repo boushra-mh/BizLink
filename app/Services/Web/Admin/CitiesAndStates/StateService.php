@@ -8,20 +8,30 @@ use PhpParser\Node\Stmt\Return_;
 
 class StateService
 {
- public function getStateById(State $state)
- {
-      return $state;
+public function getStateById($id)
+{
+    return State::findOrFail($id);
+}
+ public function getAll(Request $request)
+{
+    $query = State::query();
 
- }
- public function getAll( Request $request)
- {
-      $query = State::query();
+    // فلترة الاسم إذا موجود
+    if ($request->filled('name')) {
+        $query->filterByName($request->input('name'));
+    }
 
-        $query->filterByName($request->input('name'))
-              ->filterByStatus($request->input('status'));
-            
-    return State::latest()->get();
- }
+    // فلترة الحالة إذا موجودة
+    if ($request->filled('status')) {
+        $query->filterByStatus($request->input('status'));
+    }
+
+   
+
+    return $query->latest()->get();
+}
+
+ 
 
  public function create(array $data)
  {
@@ -35,7 +45,7 @@ class StateService
  }
  public function update(array $data ,State $state)
  {
-    $state =$this->getstateById($state);
+    $state =$this->getStateById($state);
     $state->update([
           'name'=>$data['name'],
          'status' => $data['status'] ?? $state->status,

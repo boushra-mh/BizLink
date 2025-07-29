@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\SubCategory;
 use App\Services\Web\Admin\CategoriesAndSubCategories\SubCategoryService;
 use Illuminate\Http\Request;
+use Illuminate\Http\Request as HttpRequest;
 
 class SubCategoryController extends Controller
 {
@@ -19,9 +20,9 @@ class SubCategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(HttpRequest $request)
     {
-        $sub_categories=$this->subCategoryservice->getAll();
+        $sub_categories=$this->subCategoryservice->getAll($request);
         return view('admin.sub_categories.index',compact('sub_categories'));
     }
 

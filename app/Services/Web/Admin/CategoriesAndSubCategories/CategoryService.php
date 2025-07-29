@@ -1,10 +1,14 @@
 <?php
 namespace App\Services\Web\Admin\CategoriesAndSubCategories;
 
+use App\Enums\StatusEnum;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+
+use App\Enums\MediaCollectionEnum;
+
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class CategoryService
@@ -15,13 +19,14 @@ class CategoryService
             $category = Category::create([
                 'name' => $data['name'],
                  'description' => $data['description'],
-                'status' => $data['status'],
+                'status' => StatusEnum::ACTIVE->value,
             ]);
 
            if (isset($data['image']) && $data['image'] instanceof UploadedFile) {
                 $category
                     ->addMedia($data['image'])
-                    ->toMediaCollection('category_images');
+                    ->toMediaCollection(MediaCollectionEnum::CATEGORY_IMAGE->value);
+
             }
 
             return $category;
@@ -34,15 +39,15 @@ class CategoryService
             $category->update([
                 'name' => $data['name'],
                 'description' => $data['description'],
-                'status' => $data['status'],
+                'status' => $data['status'] ?? $category->status,
             ]);
 
             if (isset($data['image']) && $data['image'] instanceof UploadedFile) {
-                $category->clearMediaCollection('category_images');
+                $category->clearMediaCollection(MediaCollectionEnum::CATEGORY_IMAGE->value);
 
                 $category
                     ->addMedia($data['image'])
-                    ->toMediaCollection('category_images');
+                     ->toMediaCollection(MediaCollectionEnum::CATEGORY_IMAGE->value);
             }
 
             return $category;
@@ -52,10 +57,8 @@ class CategoryService
     public function delete(Category $category): void
     {
         DB::transaction(function () use ($category) {
-            // حذف الصور المرتبطة
-            $category->clearMediaCollection('category_images');
+            $category->clearMediaCollection(MediaCollectionEnum::CATEGORY_IMAGE->value);
 
-            // حذف السجل
             $category->delete();
         });
     }
@@ -65,17 +68,25 @@ class CategoryService
         return Category::findOrFail($id);
     }
 
-    public function getAll(Request $request)
-    {
-        $query = Category::query();
+  public function getAll(Request $request)
+{
+    $query = Category::query();
 
-        $query->filterByName($request->input('name'))
-              ->filterByStatus($request->input('status'));
-        return Category::latest()->get();
+    // فلترة الاسم إذا موجود
+    if ($request->filled('name')) {
+        $query->filterByName($request->input('name'));
     }
+
+    // فلترة الحالة إذا موجودة
+    if ($request->filled('status')) {
+        $query->filterByStatus($request->input('status'));
+    }
+
+    return $query->latest()->get();
+}
 
     public function show($id)
     {
-        return $this->getCategoryById($id);
+        return Category::with('subCategories')->findOrFail($id);
     }
 }

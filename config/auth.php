@@ -45,11 +45,11 @@ return [
             'provider' => 'admins',
         ],
          'customer' => [
-            'driver' => 'sanctum',
+            'driver' => 'session',
             'provider' => 'customers',
         ],
          'provider' => [
-            'driver' => 'sanctum',
+            'driver' => 'session',
             'provider' => 'providers',
         ],
 

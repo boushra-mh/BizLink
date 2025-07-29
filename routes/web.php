@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Web\Admin\Auth\AdminAuthController;
+use App\Http\Controllers\Web\Admin\Auth\LoginController;
+ use App\Http\Controllers\Web\Customer\Auth\CustomerAuthController;
 use Symfony\Component\Translation\Provider\ProviderInterface;
 
 Route::get('/', function () {
@@ -9,11 +10,20 @@ Route::get('/', function () {
 });
 
 
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('login', [AdminAuthController::class, 'showLoginForm'])->name('login');
-    Route::post('login', [AdminAuthController::class, 'login'])->name('login.submit');
-    Route::post('logout', [AdminAuthController::class, 'logout'])->name('logout')->middleware('auth:admin');
-});
+
+//     Route::get('admin/login', [LoginController::class, 'showLoginForm'])->name('admin.login');
+//     Route::post('admin/login', [LoginController::class, 'login'])->name('admin.login.post');
+
+// Route::middleware('auth:admin')->group(function () {
+//     Route::post('admin/logout', [LoginController::class, 'logout'])->name('admin.logout');
+//     // هنا ممكن تضيف باقي الراوتات للوحة الادمن اذا عندك، او تعتمد Filament للوحة
+// });
+
+
+Route::get('customer/login', [CustomerAuthController::class, 'showLoginForm'])->name('customer.login');
+Route::post('customer/login', [CustomerAuthController::class, 'login'])->name('customer.login.submit');
+Route::post('customer/logout', [CustomerAuthController::class, 'logout'])->name('customer.logout');
+
 
 // استدعاء ملفات الروتس المفصولة
 require __DIR__.'/admin/provider.php';

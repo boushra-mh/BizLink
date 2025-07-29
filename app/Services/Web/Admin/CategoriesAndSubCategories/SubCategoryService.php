@@ -1,6 +1,7 @@
 <?php
 namespace App\Services\Web\Admin\CategoriesAndSubCategories;
 
+use App\Enums\MediaCollectionEnum;
 use App\Enums\StatusEnum;
 use App\Models\SubCategory;
 use Illuminate\Support\Facades\DB;
@@ -15,15 +16,28 @@ class SubCategoryService
         return SubCategory::findOrFail($id);
     }
 
-    public function getAll(Request $request)
-    {
-          $query = SubCategory::query();
+   public function getAll(Request $request)
+{
+    $query = SubCategory::query();
 
-        $query->filterByName($request->input('name'))
-              ->filterByStatus($request->input('status'))
-              ->filterByRelation('category', 'id', $request->input('category_id'));
-        return SubCategory::latest()->get();
+    // فلترة الاسم إذا موجود
+    if ($request->filled('name')) {
+        $query->filterByName($request->input('name'));
     }
+
+    // فلترة الحالة إذا موجودة
+    if ($request->filled('status')) {
+        $query->filterByStatus($request->input('status'));
+    }
+
+    // فلترة الولاية إذا موجودة
+    if ($request->filled('category_id')) {
+        $query->filterByRelation('category', 'id', $request->input('category_id'));
+    }
+
+    return $query->latest()->get();
+}
+
 
     public function create(array $data)
     {
@@ -34,14 +48,16 @@ class SubCategoryService
                 'status' =>StatusEnum::ACTIVE->value,
                    'category_id' => $data['category_id'],
             ]);
+            
 
-          
+
+
             if (isset($data['image']) && $data['image'] instanceof UploadedFile) {
                 $sub_category
                     ->addMedia($data['image'])
-                    ->toMediaCollection('sub_category_images');
+                    ->toMediaCollection(MediaCollectionEnum::SUBCATEGORY_IMAGE->value);
             }
-           
+
 
             return $sub_category;
         });
@@ -57,11 +73,11 @@ class SubCategoryService
             ]);
 
           if (isset($data['image']) && $data['image'] instanceof UploadedFile) {
-                $sub_category->clearMediaCollection('sub_category_images');
+                $sub_category->clearMediaCollection(MediaCollectionEnum::SUBCATEGORY_IMAGE->value);
 
                 $sub_category
                     ->addMedia($data['image'])
-                    ->toMediaCollection('sub_category_images');
+                    ->toMediaCollection(MediaCollectionEnum::SUBCATEGORY_IMAGE->value);
             }
 
             return $sub_category;
@@ -74,10 +90,10 @@ class SubCategoryService
     public function delete(SubCategory $sub_category)
     {
          DB::transaction(function () use ($sub_category) {
-            // حذف الصور المرتبطة
-            $sub_category->clearMediaCollection('sub_category_images');
+           
+            $sub_category->clearMediaCollection(MediaCollectionEnum::SUBCATEGORY_IMAGE->value);
 
-            // حذف السجل
+           
             $sub_category->delete();
         });
     }

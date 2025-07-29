@@ -10,18 +10,18 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    protected $categryService;
+    protected $categoryService;
     public function __construct(CategoryService $categoryService)
     {
-        $this->categryService=$categoryService;
+        $this->categoryService=$categoryService;
 
     }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories= $this->categryService->getAll();
+        $categories= $this->categoryService->getAll( $request);
         return view('admin.categories.index',compact('categories'));
     }
 
@@ -38,7 +38,7 @@ class CategoryController extends Controller
      */
     public function store(CategoryRequest $request)
     {
-        $this->categryService->create($request->validated());
+        $this->categoryService->create($request->validated());
             return redirect()->route('admin.categories.index')->with('success', 'Category created successfully!');
         
     }
@@ -48,7 +48,7 @@ class CategoryController extends Controller
      */
     public function show(string $id)
     {
-        $category=$this->categryService->show($id);
+        $category=$this->categoryService->show($id);
         return view('admin.categories.show',compact('category'));
     }
 
@@ -57,7 +57,7 @@ class CategoryController extends Controller
      */
     public function edit(string $id)
     {
-        $category=$this->categryService->getCategoryById($id);
+        $category=$this->categoryService->getCategoryById($id);
         return view('admin.categories.edit',compact('category'));
     }
 
@@ -66,7 +66,7 @@ class CategoryController extends Controller
      */
     public function update(CategoryRequest $request, Category $id)
     {
-        $this->categryService->update($request->validated(),$id);
+        $this->categoryService->update($request->validated(),$id);
         return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully!');
     }
 
@@ -75,7 +75,7 @@ class CategoryController extends Controller
      */
     public function destroy(Category $id)
     {
-        $this->categryService->delete($id);
+        $this->categoryService->delete($id);
           return redirect()->route('admin.categories.index')->with('success', 'Category deleted successfully!');
     }
 }

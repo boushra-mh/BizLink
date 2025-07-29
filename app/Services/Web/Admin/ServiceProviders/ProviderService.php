@@ -27,7 +27,7 @@ class ProviderService
     {
         $provider = Provider::with(['subCategory.category', 'city.state', 'tags'])->findOrFail($id);
 
-        if (!Auth::check() || Auth::id() !== $provider->user_id) {
+        if (!Auth::check()) {
             $provider->increment('views');
         }
 
@@ -37,15 +37,14 @@ class ProviderService
     public function create(array $data): Provider
     {
         return DB::transaction(function () use ($data) {
-            // إنشاء المزود مع الأعمدة الأساسية مع sub_category_id و city_id
+
             $provider = Provider::create(Arr::except($data, ['image', 'gallery', 'tag_ids']));
 
-            // مزود مرتبط بتاجات كثيرة many-to-many
             if (!empty($data['tag_ids'])) {
                 $provider->tags()->sync($data['tag_ids']);
             }
 
-            // رفع الصور
+
             if (!empty($data['image'])) {
                 $provider->addMedia($data['image'])->toMediaCollection('provider_image');
             }
